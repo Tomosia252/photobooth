@@ -35,7 +35,7 @@
         .state-screen { display: none; width: 100%; height: 100%; position: fixed; inset: 0; z-index: 10; }
         .active-state { display: flex !important; }
 
-        /* --- TAMPILAN KAMERA --- */
+        /* --- TAMPILAN KAMERA (99% HEIGHT) --- */
         #state-capture {
             flex-direction: column;
             align-items: center;
@@ -131,7 +131,7 @@
         <div class="camera-frame-container">
             <video id="video-preview" autoplay playsinline muted></video>
             <div id="countdown-container" class="absolute inset-0 flex items-center justify-center pointer-events-none hidden bg-black/40 backdrop-blur-sm z-30">
-                <span id="countdown-text" class="text-[3rem] md:text-[5rem] font-black italic text-emerald-400 animate-pulse drop-shadow-2xl text-center leading-none">READY?</span>
+                <span id="countdown-text" class="text-[3rem] md:text-[5rem] font-black italic text-emerald-400 animate-pulse drop-shadow-2xl text-center leading-none">READY!!!</span>
             </div>
         </div>
 
@@ -181,12 +181,12 @@
     </div>
 
     <div id="remote-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden backdrop-blur-sm">
-        <div class="glass p-5 rounded-[2rem] text-center max-w-xs w-full border border-emerald-500/50 shadow-2xl scale-95">
-            <h2 class="text-lg font-black mb-4 text-emerald-400 uppercase">Remote HP</h2>
-            <div class="bg-white p-2 rounded-2xl inline-block mb-4 shadow-inner">
+        <div class="glass p-4 rounded-[1.5rem] text-center max-w-[260px] w-full border border-emerald-500/50 shadow-2xl scale-95">
+            <h2 class="text-base font-black mb-3 text-emerald-400 uppercase tracking-wide">Remote HP</h2>
+            <div class="bg-white p-1 rounded-xl inline-block mb-3 shadow-inner">
                 <div id="qrcode"></div>
             </div>
-            <p id="remote-status" class="text-[9px] font-bold text-yellow-500 mb-4 uppercase italic animate-pulse">Menunggu Koneksi...</p>
+            <p id="remote-status" class="text-[9px] font-bold text-yellow-500 mb-3 uppercase italic animate-pulse">Menunggu Koneksi...</p>
             <button onclick="closeRemoteModal()" class="w-full py-2 bg-white/5 hover:bg-white/10 rounded-lg text-neutral-400 font-bold uppercase text-[9px]">Tutup</button>
         </div>
     </div>
@@ -258,8 +258,8 @@
                 document.getElementById('photo-indicator').classList.remove('hidden'); document.getElementById('current-photo-num').innerText = photosTakenCount + 1;
                 
                 cnt.classList.remove('hidden'); 
-                const steps = ["READY?", "3", "2", "1", "SMILE!"];
-                for (let step of steps) { txt.innerText = step; await new Promise(r => setTimeout(r, (step==="READY?"||step==="SMILE!")?800:1000)); }
+                const steps = ["READY!!!", "3", "2", "1", "SMILE!!!"];
+                for (let step of steps) { txt.innerText = step; await new Promise(r => setTimeout(r, (step==="READY!!!"||step==="SMILE!!!")?800:1000)); }
                 cnt.classList.add('hidden');
                 document.getElementById('flash-overlay').style.opacity = "1";
                 
@@ -333,7 +333,7 @@
 
         function adjustLayout() { const c = document.getElementById('canvas-scaler-container'); const s = document.getElementById('canvas-scaler'); if(s&&c) { const sc = Math.min((c.clientWidth-20)/380, (c.clientHeight-20)/820); s.style.transform = `scale(${Math.min(sc,1)})`; } } window.addEventListener('resize', adjustLayout);
         
-        function openRemoteModal() { document.getElementById('remote-modal').classList.remove('hidden'); if (!peer) { peer = new Peer(); peer.on('open', id => { document.getElementById("qrcode").innerHTML=""; new QRCode(document.getElementById("qrcode"), { text: window.location.origin+window.location.pathname.replace('index.html','')+"remote.html?remoteId="+id, width:150, height:150 }); }); peer.on('connection', c => { conn = c; document.getElementById('remote-status').innerText = "TERHUBUNG!"; conn.on('data', d => { if(d==='SHOT') { const act = document.querySelector('.active-state').id; if(act==='state-ready') { resetAndStart(); closeRemoteModal(); } else if(act==='state-capture') handleShootAction(); } else if(d==='SWITCH_CAM') switchCamera(); else if(d==='TOGGLE_MIRROR') toggleMirror(); }); }); } }
+        function openRemoteModal() { document.getElementById('remote-modal').classList.remove('hidden'); if (!peer) { peer = new Peer(); peer.on('open', id => { document.getElementById("qrcode").innerHTML=""; new QRCode(document.getElementById("qrcode"), { text: window.location.origin+window.location.pathname.replace('index.html','')+"remote.html?remoteId="+id, width:125, height:125 }); }); peer.on('connection', c => { conn = c; document.getElementById('remote-status').innerText = "TERHUBUNG!"; conn.on('data', d => { if(d==='SHOT') { const act = document.querySelector('.active-state').id; if(act==='state-ready') { resetAndStart(); closeRemoteModal(); } else if(act==='state-capture') handleShootAction(); } else if(d==='SWITCH_CAM') switchCamera(); else if(d==='TOGGLE_MIRROR') toggleMirror(); }); }); } }
         function closeRemoteModal() { document.getElementById('remote-modal').classList.add('hidden'); }
         async function uploadToDrive() { const b=document.getElementById('btn-save-drive'); b.disabled=true; b.innerText="UPLOADING..."; fCanvas.discardActiveObject().renderAll(); try { await fetch(GOOGLE_SCRIPT_URL, {method:'POST', mode:'no-cors', body:JSON.stringify({image:fCanvas.toDataURL({format:'png',multiplier:2}), filename:"tkj_slot_"+(currentSlotIndex+1)})}); document.getElementById('download-modal').classList.remove('hidden'); } catch(e){} b.disabled=false; b.innerText="☁️ Drive"; }
         function closeDownloadModal() { document.getElementById('download-modal').classList.add('hidden'); }
