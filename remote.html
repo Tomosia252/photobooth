@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TKJ Remote Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #011a13; 
+            touch-action: manipulation; 
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        .active-btn:active { 
+            transform: scale(0.92); 
+            filter: brightness(1.2);
+        }
+        .glass-panel {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen text-white p-6 overflow-hidden">
+    
+    <div id="status-container" class="text-center mb-10">
+        <div id="status-dot" class="w-3 h-3 bg-red-500 rounded-full mx-auto mb-2 animate-pulse"></div>
+        <p id="status-text" class="text-[10px] font-black uppercase tracking-[0.3em] text-red-500">Mencoba Menghubungkan...</p>
+    </div>
+
+    <div class="glass-panel p-8 rounded-[3rem] w-full max-w-xs flex flex-col items-center gap-8 shadow-2xl">
+        <div class="relative">
+            <div id="ring" class="absolute inset-0 border-4 border-emerald-500 rounded-full scale-125 opacity-20"></div>
+            <button id="btn-shoot" disabled class="relative w-32 h-32 bg-emerald-500 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)] active-btn disabled:grayscale disabled:opacity-50 transition-all">
+                <span class="text-4xl">📸</span>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 w-full">
+            <button id="btn-switch" class="flex flex-col items-center justify-center p-5 bg-white/5 rounded-[2rem] border border-white/10 active-btn">
+                <span class="text-2xl mb-2">🔄</span>
+                <span class="text-[9px] font-bold uppercase tracking-widest">Kamera</span>
+            </button>
+
+            <button id="btn-mirror" class="flex flex-col items-center justify-center p-5 bg-white/5 rounded-[2rem] border border-white/10 active-btn">
+                <span class="text-2xl mb-2">🪞</span>
+                <span class="text-[9px] font-bold uppercase tracking-widest">Mirror</span>
+            </button>
+        </div>
+    </div>
+
+    <p class="mt-12 text-[8px] font-medium text-emerald-500/40 uppercase tracking-[0.4em] text-center">
+        TKJ Photobooth Remote System v2.0
+    </p>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const remoteId = urlParams.get('remoteId');
+        
+        const statusText = document.getElementById('status-text');
+        const statusDot = document.getElementById('status-dot');
+        const btnShoot = document.getElementById('btn-shoot');
+        const btnSwitch = document.getElementById('btn-switch');
+        const btnMirror = document.getElementById('btn-mirror');
+        const ring = document.getElementById('ring');
+
+        if (remoteId) {
+            const peer = new Peer();
+            
+            peer.on('open', () => {
+                const conn = peer.connect(remoteId);
+                
+                conn.on('open', () => {
+                    // Update UI Terhubung
+                    statusText.innerText = "TERHUBUNG KE PC";
+                    statusText.className = "text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500";
+                    statusDot.className = "w-3 h-3 bg-emerald-500 rounded-full mx-auto mb-2";
+                    btnShoot.disabled = false;
+                    ring.classList.add('animate-ping');
+
+                    // Listener tombol Shutter
+                    btnShoot.onclick = () => {
+                        conn.send('SHOT');
+                        vibrate(50);
+                    };
+
+                    // Listener Switch Kamera (Sinkron dengan index.html)
+                    btnSwitch.onclick = () => {
+                        conn.send('SWITCH_CAM');
+                        vibrate(30);
+                    };
+
+                    // Listener Mirror
+                    btnMirror.onclick = () => {
+                        conn.send('TOGGLE_MIRROR');
+                        vibrate(30);
+                    };
+                });
+
+                conn.on('close', () => {
+                    statusText.innerText = "KONEKSI TERPUTUS";
+                    statusText.className = "text-[10px] font-black uppercase tracking-[0.3em] text-red-500";
+                    btnShoot.disabled = true;
+                    statusDot.className = "w-3 h-3 bg-red-500 rounded-full mx-auto mb-2 animate-pulse";
+                    ring.classList.remove('animate-ping');
+                });
+            });
+        }
+
+        // Fungsi getaran untuk feedback di HP
+        function vibrate(ms) {
+            if (navigator.vibrate) {
+                navigator.vibrate(ms);
+            }
+        }
+
+        // Mencegah menu klik kanan
+        document.addEventListener('contextmenu', e => e.preventDefault());
+    </script>
+</body>
+</html>
