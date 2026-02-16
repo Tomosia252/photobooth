@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TKJ Photobooth Pro - Final Balanced</title>
+    <title>TKJ Photobooth Pro - Final Polish</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
@@ -24,6 +24,7 @@
         }
         
         .glass { background: rgba(6, 78, 59, 0.4); backdrop-filter: blur(15px); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .glass-danger { background: rgba(127, 29, 29, 0.4); backdrop-filter: blur(15px); border: 1px solid rgba(220, 38, 38, 0.3); }
         .modal-overlay { z-index: 1000 !important; background: rgba(0,0,0,0.9); }
         
         .custom-scroll::-webkit-scrollbar { width: 3px; height: 3px; }
@@ -34,7 +35,7 @@
         .state-screen { display: none; width: 100%; height: 100%; position: fixed; inset: 0; z-index: 10; }
         .active-state { display: flex !important; }
 
-        /* --- TAMPILAN KAMERA (99% HEIGHT) --- */
+        /* --- TAMPILAN KAMERA --- */
         #state-capture {
             flex-direction: column;
             align-items: center;
@@ -123,7 +124,6 @@
             <div class="glass w-20 py-2 rounded-full flex items-center justify-center shadow-lg backdrop-blur-md bg-emerald-900/40 border border-emerald-500/30">
                 <span class="text-[8px] font-black text-white uppercase tracking-wider">SESI <span id="capture-session-disp" class="text-emerald-400 ml-1">1</span>/4</span>
             </div>
-            
             <div id="photo-indicator" class="hidden glass w-20 py-2 rounded-full flex items-center justify-center shadow-lg backdrop-blur-md bg-white/10 border border-white/10">
                 <span class="text-[8px] font-black text-white uppercase tracking-wider">FOTO <span id="current-photo-num" class="text-emerald-400 ml-1">1</span>/3</span>
             </div>
@@ -133,24 +133,15 @@
             <video id="video-preview" autoplay playsinline muted></video>
             
             <div id="countdown-container" class="absolute inset-0 flex items-center justify-center pointer-events-none hidden bg-black/40 backdrop-blur-sm z-30">
-                <span id="countdown-text" class="text-[3rem] md:text-[5rem] font-black text-emerald-400 animate-pulse drop-shadow-2xl text-center leading-none">READY?</span>
+                <span id="countdown-text" class="text-[3rem] md:text-[5rem] font-black italic text-emerald-400 animate-pulse drop-shadow-2xl text-center leading-none">READY!!!</span>
             </div>
         </div>
 
         <div class="flex items-center gap-6 z-30 -mt-20 pb-6 pointer-events-auto">
-            <button onclick="switchCamera()" class="w-12 h-12 rounded-full glass text-white flex items-center justify-center active:scale-90 hover:bg-white/20 shadow-2xl backdrop-blur-md border border-white/20">
-                <span class="text-xl">🔄</span>
-            </button>
-            
-            <button id="btn-shoot" onclick="handleShootAction()" class="w-16 h-16 rounded-full bg-emerald-500/60 backdrop-blur-md border-[3px] border-emerald-300/50 flex items-center justify-center active:scale-90 shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:bg-emerald-500/80 hover:scale-105 transition-all">
-                <span class="text-3xl drop-shadow-md">📸</span>
-            </button>
-            
-            <button onclick="toggleMirror()" class="w-12 h-12 rounded-full glass text-white flex items-center justify-center active:scale-90 hover:bg-white/20 shadow-2xl backdrop-blur-md border border-white/20">
-                <span class="text-xl">🪞</span>
-            </button>
+            <button onclick="switchCamera()" class="w-12 h-12 rounded-full glass text-white flex items-center justify-center active:scale-90 hover:bg-white/20 shadow-2xl backdrop-blur-md border border-white/20"><span class="text-xl">🔄</span></button>
+            <button id="btn-shoot" onclick="handleShootAction()" class="w-16 h-16 rounded-full bg-emerald-500/60 backdrop-blur-md border-[3px] border-emerald-300/50 flex items-center justify-center active:scale-90 shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:bg-emerald-500/80 hover:scale-105 transition-all"><span class="text-3xl drop-shadow-md">📸</span></button>
+            <button onclick="toggleMirror()" class="w-12 h-12 rounded-full glass text-white flex items-center justify-center active:scale-90 hover:bg-white/20 shadow-2xl backdrop-blur-md border border-white/20"><span class="text-xl">🪞</span></button>
         </div>
-        
     </div>
 
     <div id="state-edit" class="state-screen flex-row bg-black/95">
@@ -193,9 +184,20 @@
 
     <div id="remote-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden backdrop-blur-sm"><div class="glass p-6 rounded-[2rem] text-center max-w-xs w-full border border-emerald-500/50 shadow-2xl scale-95"><h2 class="text-lg font-black mb-4 text-emerald-400 uppercase">Remote HP</h2><div class="bg-white p-3 rounded-2xl inline-block mb-4 shadow-inner"><div id="qrcode"></div></div><p id="remote-status" class="text-[9px] font-bold text-yellow-500 mb-4 uppercase italic animate-pulse">Menunggu...</p><button onclick="closeRemoteModal()" class="w-full py-2 bg-white/5 hover:bg-white/10 rounded-lg text-neutral-400 font-bold uppercase text-[9px]">Tutup</button></div></div>
     <div id="download-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden backdrop-blur-sm"><div class="glass p-6 rounded-[2rem] text-center max-w-xs w-full border border-emerald-500/50 shadow-2xl scale-95"><div class="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-emerald-500/40"><span class="text-2xl text-white">✅</span></div><h2 class="text-lg font-black mb-2 text-white uppercase italic">Berhasil!</h2><p id="success-msg" class="text-[10px] text-white/70 mb-6 leading-relaxed">Terkirim ke Drive.</p><button onclick="closeDownloadModal()" class="w-full py-3 bg-emerald-600 rounded-xl font-black text-[10px] uppercase hover:bg-emerald-500 transition-all shadow-lg">Lanjut</button></div></div>
+    
+    <div id="delete-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+        <div class="glass p-6 rounded-[2rem] text-center max-w-xs w-full border border-red-500/50 shadow-2xl scale-95 animate-[fadeIn_0.2s_ease]">
+            <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-red-500/40"><span class="text-2xl text-white">🗑️</span></div>
+            <h2 class="text-lg font-black mb-2 text-white uppercase italic">Hapus Sesi Ini?</h2>
+            <p class="text-[10px] text-white/70 mb-6 leading-relaxed">Foto ini akan hilang permanen.</p>
+            <div class="flex gap-2">
+                <button onclick="closeDeleteModal()" class="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-neutral-400 font-bold uppercase text-[9px] transition-all">Batal</button>
+                <button onclick="confirmDelete()" class="flex-1 py-3 bg-red-600 rounded-xl font-black text-white text-[9px] uppercase hover:bg-red-500 transition-all shadow-lg">Hapus</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // --- LOGIC ASLI (KAMERA DUMMY MODE JIKA DI PC) ---
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi8CZXia2AuYICDY67-cs7d0tF-uDfZTNxK7C84p-HsN-S4rQqrHWZxQ9k2EBaAGNWbA/exec"; 
         
         const emojis = ['😎','🔥','✨','❤️','⭐','📸','🎓','🎉','💻','✌️','👍','🥰','🤩','🤪','🥳','👻','👽','🤖','👾','🎃','👑','💍','💄','💋','👀','🧠','💪','🤙','🙌','👐','🌹','🌻','🌷','💐','🌸','🍀','🍄','🌍','🌙','☀️','⚡','❄️','🔥','💧','🎈','🎁','🎀','🎊','🧸','🖼️'];
@@ -220,6 +222,7 @@
         const totalPhotosToTake = 3; let currentFacingMode = 'user'; 
         let savedSessions = [null, null, null, null]; let currentSlotIndex = 0;
         let selectedFont = 'Plus Jakarta Sans'; let selectedColor = '#ffffff';
+        let pendingDeleteIndex = null; // Store which session to delete
 
         async function getConnectedCameras() {
             try { await navigator.mediaDevices.getUserMedia({ video: true }); const devices = await navigator.mediaDevices.enumerateDevices();
@@ -257,8 +260,8 @@
                 document.getElementById('photo-indicator').classList.remove('hidden'); document.getElementById('current-photo-num').innerText = photosTakenCount + 1;
                 
                 cnt.classList.remove('hidden'); 
-                const steps = ["READY?", "3", "2", "1", "SMILE!"];
-                for (let step of steps) { txt.innerText = step; await new Promise(r => setTimeout(r, (step==="READY?"||step==="SMILE!")?800:1000)); }
+                const steps = ["READY!!!", "3", "2", "1", "SMILE!!!"];
+                for (let step of steps) { txt.innerText = step; await new Promise(r => setTimeout(r, (step==="READY!!!"||step==="SMILE!!!")?800:1000)); }
                 cnt.classList.add('hidden');
                 document.getElementById('flash-overlay').style.opacity = "1";
                 
@@ -270,7 +273,6 @@
                 if(video.videoWidth > 0) {
                     if(isMirror) { ctx.translate(vw, 0); ctx.scale(-1, 1); } ctx.drawImage(video, 0, 0, vw, vh);
                 } else {
-                    // DUMMY IMAGE
                     ctx.fillStyle = "#111"; ctx.fillRect(0,0,vw,vh);
                     ctx.fillStyle = "#fff"; ctx.font = "bold 40px sans-serif"; ctx.fillText("NO CAMERA", 50, 100);
                 }
@@ -314,6 +316,25 @@
 
         function saveCanvasToSessionVar() { fCanvas.renderAll(); savedSessions[currentSlotIndex] = fCanvas.toDataURL({ format: 'png', multiplier: 2 }); updateSessionUI(); }
 
+        // --- CUSTOM DELETE LOGIC (NO ALERT) ---
+        function deleteSession(index) {
+            pendingDeleteIndex = index;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.add('hidden');
+            pendingDeleteIndex = null;
+        }
+        function confirmDelete() {
+            if (pendingDeleteIndex !== null) {
+                savedSessions[pendingDeleteIndex] = null;
+                currentSlotIndex = pendingDeleteIndex;
+                startSequence();
+                closeDeleteModal();
+            }
+        }
+
+        // --- RENDER TOOLS ---
         function renderEmojiList() { const c = document.getElementById('emoji-slider'); c.innerHTML = ''; emojis.forEach(e => { const b = document.createElement('button'); b.className = "flex-shrink-0 w-8 h-8 text-lg bg-white/5 hover:bg-white/20 rounded-lg border border-white/5"; b.innerText = e; b.onclick = () => { const t = new fabric.Text(e, { fontSize: 60, left: 150, top: 400 }); fCanvas.add(t); fCanvas.setActiveObject(t); }; c.appendChild(b); }); }
         function renderFrameList() { const c = document.getElementById('frame-slider'); c.innerHTML = ''; frames.forEach(f => { const b = document.createElement('button'); b.className = `flex-shrink-0 px-3 py-2 text-[8px] font-bold uppercase rounded-lg border border-white/10 ${f.color||'bg-white/10'}`; b.innerText = f.name; b.onclick = () => changeFrame(f.file); c.appendChild(b); }); }
         function renderFontList() { const c = document.getElementById('font-slider'); c.innerHTML = ''; fonts.forEach(f => { const b = document.createElement('button'); b.className = `flex-shrink-0 px-3 py-1 text-[9px] rounded-lg border ${selectedFont===f.family?'bg-emerald-500 text-white':'bg-white/5 text-white/70'}`; b.innerText = f.name; b.style.fontFamily = f.family; b.onclick = () => { selectedFont = f.family; renderFontList(); const o = fCanvas.getActiveObject(); if(o&&o.type==='i-text') { o.set("fontFamily",selectedFont); fCanvas.requestRenderAll(); } }; c.appendChild(b); }); }
@@ -323,8 +344,7 @@
 
         function updateSessionUI() { const c = document.getElementById('session-slots-container'); c.innerHTML = ''; let fc = 0; savedSessions.forEach((d, i) => { const e = document.createElement('div'); e.className = `session-slot ${i===currentSlotIndex?'active-slot':''}`; if(d) { fc++; e.innerHTML = `<img src="${d}"><div class="delete-overlay" onclick="deleteSession(${i})"><span class="text-white text-lg">🗑️</span></div>`; } else { e.innerHTML = `<div class="flex items-center justify-center w-full h-full text-white/20 text-[10px] font-bold border-dashed border-2 border-white/10">${i+1}</div>`; } c.appendChild(e); }); document.getElementById('session-count').innerText = `${fc}/4`; document.getElementById('btn-next-session').style.display = fc>=4?'none':'flex'; }
         function handleNextSession() { const n = savedSessions.findIndex(s => s===null); if(n!==-1) { currentSlotIndex=n; startSequence(); } else alert("Penuh!"); }
-        function deleteSession(i) { if(confirm("Foto ulang?")) { savedSessions[i]=null; currentSlotIndex=i; startSequence(); } }
-
+        
         function handlePrintSingleDefault() { fCanvas.discardActiveObject().renderAll(); const d = fCanvas.toDataURL({format:'png', multiplier:3}); const w = window.open('','_blank'); w.document.write(`<html><head><style>@page{size:A4 portrait;margin:0}body{margin:0;display:flex;align-items:center;justify-content:center;height:100vh}img{width:102mm;border:1px dashed #ccc}</style></head><body><img src="${d}" onload="window.print()"></body></html>`); w.document.close(); }
         function handlePrintComposite() { let h=''; savedSessions.forEach(d => h+=d?`<div class="photo-container"><img src="${d}"></div>`:`<div class="photo-container"></div>`); const w = window.open('','_blank'); w.document.write(`<html><head><style>@page{size:A4 portrait;margin:0}body{margin:0;padding:10mm;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:5mm;height:100vh;box-sizing:border-box}.photo-container{display:flex;align-items:center;justify-content:center;border:1px dashed #eee;overflow:hidden}img{max-width:95%;max-height:95%;object-fit:contain}</style></head><body>${h}</body></html>`); w.document.close(); setTimeout(()=>w.print(),500); }
 
