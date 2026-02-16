@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TKJ Photobooth Pro - Framed Cam</title>
+    <title>TKJ Photobooth Pro - Final Balanced</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
@@ -23,62 +23,50 @@
             margin: 0; overflow: hidden; height: 100vh; width: 100vw;
         }
         
-        /* UI Utilities */
         .glass { background: rgba(6, 78, 59, 0.4); backdrop-filter: blur(15px); border: 1px solid rgba(16, 185, 129, 0.3); }
         .modal-overlay { z-index: 1000 !important; background: rgba(0,0,0,0.9); }
         
-        /* Custom Scrollbar */
-        .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.3); border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar { width: 3px; height: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.5); border-radius: 10px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* State Management */
         .state-screen { display: none; width: 100%; height: 100%; position: fixed; inset: 0; z-index: 10; }
         .active-state { display: flex !important; }
 
-        /* --- VISUAL KAMERA BARU (BINGKAI) --- */
+        /* --- TAMPILAN KAMERA (99% HEIGHT) --- */
         #state-capture {
-            /* Flex untuk menengahkan konten */
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle at center, #064e3b 0%, #011a13 100%); /* Background Hijau Elegan */
+            background: #000;
         }
 
         .camera-frame-container {
             position: relative;
-            width: 75%; /* Ukuran 75% layar sesuai request */
-            max-width: 800px;
-            aspect-ratio: 16/9;
-            border: 8px solid #10b981; /* Border Emerald Tebal */
-            border-radius: 20px;
+            height: 99vh; 
+            width: 70vw; 
+            border: 6px solid #10b981; 
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 0 50px rgba(16, 185, 129, 0.3), 0 20px 30px rgba(0,0,0,0.5);
-            background: black;
+            box-shadow: 0 0 100px rgba(16, 185, 129, 0.2);
+            background: #111;
             z-index: 10;
+            margin-top: 0; 
         }
 
-        #video-preview { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            transform: scaleX(-1); 
-        }
+        #video-preview { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
 
-        /* Session Preview Slots */
+        /* Session Slots */
         .session-slot {
             width: 100%; aspect-ratio: 310/174;
             background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.3);
-            border-radius: 8px; overflow: hidden; position: relative; cursor: pointer; transition: all 0.2s;
+            border-radius: 6px; overflow: hidden; position: relative; cursor: pointer; transition: all 0.2s;
         }
         .session-slot:hover { border-color: #34d399; }
-        .session-slot img { width: 100%; height: 100%; object-fit: cover; }
         .session-slot.active-slot { border: 2px solid #34d399; box-shadow: 0 0 10px rgba(52, 211, 153, 0.3); }
-        .delete-overlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 0.2s;
-        }
+        .session-slot img { width: 100%; height: 100%; object-fit: cover; }
+        .delete-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; opacity: 0; }
         .session-slot:hover .delete-overlay { opacity: 1; }
 
         #rotate-warning { display: none; position: fixed; inset: 0; z-index: 99999; background: #011a13; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
@@ -98,26 +86,26 @@
 
     <div id="flash-overlay" class="fixed inset-0 bg-white z-[1000] pointer-events-none opacity-0 transition-opacity duration-100"></div>
 
-    <div id="state-ready" class="state-screen active-state flex-col items-center justify-center p-6 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/40 to-[#011a13]">
-        <div class="w-full max-w-md flex flex-col items-center gap-6 z-20">
+    <div id="state-ready" class="state-screen active-state flex-col items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/40 to-[#011a13]">
+        <div class="w-full max-w-xs flex flex-col items-center gap-3 z-20 scale-[0.75] md:scale-100 origin-center">
             <div class="text-center">
-                <h1 class="text-5xl md:text-6xl font-black text-emerald-400 italic uppercase tracking-tighter drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]">TKJ Booth</h1>
-                <p class="text-xs font-bold tracking-[0.3em] text-emerald-600 mt-2 uppercase">SMK Ma'arif NU Tirto</p>
+                <h1 class="text-4xl font-black text-emerald-400 italic uppercase tracking-tighter drop-shadow-lg">TKJ Booth</h1>
+                <p class="text-[10px] font-bold tracking-[0.3em] text-emerald-600 mt-1 uppercase">SMK Ma'arif NU Tirto</p>
             </div>
             
-            <div class="glass p-6 rounded-3xl w-full space-y-4">
-                <select id="video-source" class="w-full bg-emerald-900/30 border border-emerald-500/30 rounded-xl px-4 py-3 text-emerald-400 text-xs font-bold text-center"></select>
-                <button onclick="toggleMirror()" id="mirror-toggle" class="w-full py-3 bg-emerald-500/10 border border-emerald-500/50 rounded-xl text-[10px] font-black uppercase text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all">Mode Cermin: ON</button>
+            <div class="glass p-3 rounded-2xl w-full space-y-2">
+                <select id="video-source" class="w-full bg-emerald-900/30 border border-emerald-500/30 rounded-lg px-3 py-2 text-emerald-400 text-[10px] font-bold text-center"></select>
+                <button onclick="toggleMirror()" id="mirror-toggle" class="w-full py-2 bg-emerald-500/10 border border-emerald-500/50 rounded-lg text-[9px] font-black uppercase text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all">Mode Cermin: ON</button>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 w-full">
-                <button onclick="resetAndStart()" class="glass p-6 rounded-3xl hover:bg-emerald-500/20 hover:border-emerald-400 transition-all active:scale-95 group text-center flex flex-col items-center justify-center h-40">
-                    <div class="bg-emerald-500 w-14 h-14 rounded-2xl flex items-center justify-center mb-3 text-white text-2xl shadow-lg group-hover:scale-110 transition-transform">📸</div>
-                    <span class="text-sm font-black uppercase tracking-tight">Sesi Baru</span>
+            <div class="grid grid-cols-2 gap-3 w-full">
+                <button onclick="resetAndStart()" class="glass p-3 rounded-2xl hover:bg-emerald-500/20 hover:border-emerald-400 transition-all active:scale-95 group text-center flex flex-col items-center justify-center h-20">
+                    <div class="bg-emerald-500 w-8 h-8 rounded-lg flex items-center justify-center mb-1 text-white text-base shadow-lg group-hover:scale-110 transition-transform">📸</div>
+                    <span class="text-[9px] font-black uppercase tracking-tight">Mulai Baru</span>
                 </button>
-                <button onclick="openRemoteModal()" class="glass p-6 rounded-3xl hover:bg-emerald-500/20 hover:border-emerald-400 transition-all active:scale-95 group text-center flex flex-col items-center justify-center h-40">
-                    <div class="bg-neutral-800 w-14 h-14 rounded-2xl flex items-center justify-center mb-3 text-emerald-500 text-2xl shadow-lg group-hover:scale-110 transition-transform">📱</div>
-                    <span class="text-sm font-black uppercase tracking-tight">Remote HP</span>
+                <button onclick="openRemoteModal()" class="glass p-3 rounded-2xl hover:bg-emerald-500/20 hover:border-emerald-400 transition-all active:scale-95 group text-center flex flex-col items-center justify-center h-20">
+                    <div class="bg-neutral-800 w-8 h-8 rounded-lg flex items-center justify-center mb-1 text-emerald-500 text-base shadow-lg group-hover:scale-110 transition-transform">📱</div>
+                    <span class="text-[9px] font-black uppercase tracking-tight">Remote HP</span>
                 </button>
             </div>
         </div>
@@ -125,15 +113,19 @@
 
     <div id="state-capture" class="state-screen">
         
-        <div class="absolute top-6 left-0 right-0 flex justify-between px-8 z-20 w-full max-w-4xl mx-auto">
-            <div class="glass px-4 py-2 rounded-full">
-                <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">TKJ CAM</span>
+        <div class="absolute top-4 left-4 z-30">
+            <div class="glass px-3 py-2 rounded-full flex items-center shadow-lg backdrop-blur-md">
+                <span class="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">TKJ CAM</span>
             </div>
-            <div id="photo-indicator" class="glass px-4 py-2 rounded-full border border-white/10 hidden">
-                <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Foto: <span id="current-photo-num" class="text-white text-lg ml-1">1</span>/3</span>
+        </div>
+
+        <div class="absolute top-4 right-4 z-30 flex flex-col items-end gap-2">
+            <div class="glass w-20 py-2 rounded-full flex items-center justify-center shadow-lg backdrop-blur-md bg-emerald-900/40 border border-emerald-500/30">
+                <span class="text-[8px] font-black text-white uppercase tracking-wider">SESI <span id="capture-session-disp" class="text-emerald-400 ml-1">1</span>/4</span>
             </div>
-            <div class="bg-emerald-600/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg">
-                <span class="text-[10px] font-black text-white uppercase tracking-widest">Sesi: <span id="active-session-display">1</span>/4</span>
+            
+            <div id="photo-indicator" class="hidden glass w-20 py-2 rounded-full flex items-center justify-center shadow-lg backdrop-blur-md bg-white/10 border border-white/10">
+                <span class="text-[8px] font-black text-white uppercase tracking-wider">FOTO <span id="current-photo-num" class="text-emerald-400 ml-1">1</span>/3</span>
             </div>
         </div>
 
@@ -141,125 +133,85 @@
             <video id="video-preview" autoplay playsinline muted></video>
             
             <div id="countdown-container" class="absolute inset-0 flex items-center justify-center pointer-events-none hidden bg-black/40 backdrop-blur-sm z-30">
-                <span id="countdown-text" class="text-[6rem] md:text-[8rem] font-black text-emerald-400 animate-pulse drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] text-center leading-none">READY?</span>
+                <span id="countdown-text" class="text-[3rem] md:text-[5rem] font-black text-emerald-400 animate-pulse drop-shadow-2xl text-center leading-none">READY?</span>
             </div>
         </div>
 
-        <div class="mt-6 flex items-center gap-8 z-20">
-            <button onclick="switchCamera()" class="w-14 h-14 rounded-full glass text-white flex items-center justify-center active:scale-90 transition-all hover:bg-white/10 shadow-lg group">
-                <span class="text-2xl group-hover:rotate-180 transition-transform duration-500">🔄</span>
+        <div class="flex items-center gap-6 z-30 -mt-20 pb-6 pointer-events-auto">
+            <button onclick="switchCamera()" class="w-12 h-12 rounded-full glass text-white flex items-center justify-center active:scale-90 hover:bg-white/20 shadow-2xl backdrop-blur-md border border-white/20">
+                <span class="text-xl">🔄</span>
             </button>
             
-            <button id="btn-shoot" onclick="handleShootAction()" class="w-20 h-20 rounded-full bg-emerald-500 border-4 border-emerald-300 flex items-center justify-center active:scale-90 transition-all shadow-[0_0_40px_rgba(16,185,129,0.6)] hover:bg-emerald-400 hover:scale-105">
-                <span class="text-4xl">📸</span>
+            <button id="btn-shoot" onclick="handleShootAction()" class="w-16 h-16 rounded-full bg-emerald-500/60 backdrop-blur-md border-[3px] border-emerald-300/50 flex items-center justify-center active:scale-90 shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:bg-emerald-500/80 hover:scale-105 transition-all">
+                <span class="text-3xl drop-shadow-md">📸</span>
             </button>
             
-            <button onclick="toggleMirror()" class="w-14 h-14 rounded-full glass text-white flex items-center justify-center active:scale-90 transition-all hover:bg-white/10 shadow-lg">
-                <span class="text-2xl">🪞</span>
+            <button onclick="toggleMirror()" class="w-12 h-12 rounded-full glass text-white flex items-center justify-center active:scale-90 hover:bg-white/20 shadow-2xl backdrop-blur-md border border-white/20">
+                <span class="text-xl">🪞</span>
             </button>
         </div>
         
-        <p id="capture-instruction" class="mt-2 text-[10px] font-bold tracking-[0.2em] uppercase text-white/40">Tekan Tombol / Spasi</p>
     </div>
 
     <div id="state-edit" class="state-screen flex-row bg-black/95">
         <div id="canvas-scaler-container" class="flex-1 p-4 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-900/20 to-black">
-            <div id="canvas-scaler">
-                <div id="canvas-wrapper" style="width: 380px; height: 820px; background: transparent;"><canvas id="main-canvas"></canvas></div>
-            </div>
+            <div id="canvas-scaler"><div id="canvas-wrapper" style="width: 380px; height: 820px; background: transparent;"><canvas id="main-canvas"></canvas></div></div>
         </div>
 
-        <div class="w-[380px] h-full flex flex-col bg-[#011a13] border-l border-emerald-500/30 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-20">
-            <div class="px-6 py-4 border-b border-emerald-500/20 flex justify-between items-center bg-emerald-900/20">
-                <h2 class="text-sm font-black text-emerald-400 uppercase italic tracking-widest">Editor Pro</h2>
-                <div class="text-[9px] font-bold text-white/50 px-2 py-1 bg-white/5 rounded border border-white/10">
-                    SLOT: <span id="current-slot-info" class="text-emerald-400">1</span>
-                </div>
+        <div class="w-[300px] h-full flex flex-col bg-[#011a13] border-l border-emerald-500/30 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-20">
+            <div class="px-3 py-2 border-b border-emerald-500/20 flex justify-between items-center bg-emerald-900/20">
+                <h2 class="text-xs font-black text-emerald-400 uppercase italic tracking-widest">Editor</h2>
+                <div class="text-[8px] font-bold text-white/50 px-2 py-1 bg-white/5 rounded border border-white/10">SLOT: <span id="current-slot-info" class="text-emerald-400">1</span></div>
             </div>
 
-            <div class="flex-1 overflow-y-auto custom-scroll p-6 space-y-6">
+            <div class="flex-1 overflow-y-auto custom-scroll p-3 space-y-3">
+                <div><h3 class="text-[9px] font-bold text-white/50 mb-1 uppercase">Status Sesi <span class="text-emerald-500" id="session-count">0/4</span></h3><div class="grid grid-cols-2 gap-2" id="session-slots-container"></div></div>
+                <div><h3 class="text-[9px] font-bold text-white/50 mb-1 uppercase">Frame</h3><div class="flex overflow-x-auto gap-2 pb-1 no-scrollbar" id="frame-slider"></div></div>
+                <div><h3 class="text-[9px] font-bold text-white/50 mb-1 uppercase">Sticker</h3><div class="flex overflow-x-auto gap-2 pb-1 no-scrollbar" id="emoji-slider"></div></div>
                 <div>
-                    <h3 class="text-[10px] font-bold text-white/50 mb-2 uppercase tracking-wider flex justify-between">
-                        <span>Status Sesi</span><span class="text-emerald-500" id="session-count">0/4</span>
-                    </h3>
-                    <div class="grid grid-cols-2 gap-2" id="session-slots-container"></div>
+                    <h3 class="text-[9px] font-bold text-white/50 mb-1 uppercase">Teks</h3>
+                    <div class="flex overflow-x-auto gap-2 mb-2 no-scrollbar" id="font-slider"></div>
+                    <div class="flex overflow-x-auto gap-2 mb-2 no-scrollbar px-1" id="color-slider"></div>
+                    <div class="flex gap-1"><input type="text" id="custom-text-input" placeholder="Teks..." class="flex-1 bg-emerald-900/20 border border-emerald-500/30 rounded-lg px-3 py-1 text-[10px] text-white focus:outline-none focus:border-emerald-500"><button onclick="addTextToCanvas()" class="bg-emerald-600 w-8 rounded-lg flex items-center justify-center font-bold text-sm shadow hover:bg-emerald-500 active:scale-95">+</button></div>
                 </div>
-
                 <div>
-                    <h3 class="text-[10px] font-bold text-white/50 mb-2 uppercase tracking-wider">10 Frame Pilihan (Geser ➡)</h3>
-                    <div class="flex overflow-x-auto gap-2 pb-2 no-scrollbar" id="frame-slider">
-                        </div>
-                </div>
-
-                <div>
-                    <h3 class="text-[10px] font-bold text-white/50 mb-2 uppercase tracking-wider">Sticker Emoji (Geser ➡)</h3>
-                    <div class="flex overflow-x-auto gap-2 pb-2 no-scrollbar" id="emoji-slider">
-                        </div>
-                </div>
-
-                <div>
-                    <h3 class="text-[10px] font-bold text-white/50 mb-2 uppercase tracking-wider">Teks & Warna</h3>
-                    <div class="flex overflow-x-auto gap-2 mb-3 no-scrollbar" id="font-slider"></div>
-                    <div class="flex overflow-x-auto gap-3 mb-3 no-scrollbar px-1" id="color-slider"></div>
-                    <div class="flex gap-2">
-                        <input type="text" id="custom-text-input" placeholder="Ketik teks..." class="flex-1 bg-emerald-900/20 border border-emerald-500/30 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
-                        <button onclick="addTextToCanvas()" class="bg-emerald-600 w-10 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg hover:bg-emerald-500 transition-all active:scale-95">+</button>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-[10px] font-bold text-white/50 mb-3 uppercase tracking-wider">Finalisasi</h3>
-                    <button onclick="fCanvas.remove(fCanvas.getActiveObject())" class="w-full py-2 bg-red-500/10 border border-red-500/30 rounded-lg font-bold text-red-400 text-[9px] uppercase hover:bg-red-500 hover:text-white transition-all mb-4">Hapus Elemen</button>
-                    <div class="grid grid-cols-1 gap-3">
-                        <button id="btn-next-session" onclick="handleNextSession()" class="w-full py-4 bg-yellow-600 rounded-xl font-black text-white text-xs uppercase shadow-lg shadow-yellow-900/50 hover:bg-yellow-500 hover:scale-[1.02] transition-all tracking-wide flex items-center justify-center gap-2 animate-pulse">
-                            <span>📸</span> Foto Lagi (Sesi Berikutnya)
-                        </button>
+                    <button onclick="fCanvas.remove(fCanvas.getActiveObject())" class="w-full py-2 bg-red-500/10 border border-red-500/30 rounded-lg font-bold text-red-400 text-[9px] uppercase hover:bg-red-500 hover:text-white mb-2">Hapus Item</button>
+                    <div class="grid grid-cols-1 gap-2">
+                        <button id="btn-next-session" onclick="handleNextSession()" class="w-full py-3 bg-yellow-600 rounded-xl font-black text-white text-[10px] uppercase shadow-lg hover:bg-yellow-500 active:scale-95 flex items-center justify-center gap-2"><span>📸</span> Foto Lagi</button>
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="handlePrintSingleDefault()" class="py-3 bg-purple-600 rounded-xl font-black text-white text-[9px] uppercase shadow-lg hover:bg-purple-500 transition-all flex flex-col items-center justify-center gap-1"><span class="text-lg">📄</span> Cetak Slot Ini</button>
-                            <button onclick="handlePrintComposite()" class="py-3 bg-indigo-600 rounded-xl font-black text-white text-[9px] uppercase shadow-lg hover:bg-indigo-500 transition-all flex flex-col items-center justify-center gap-1"><span class="text-lg">田</span> Cetak Semua</button>
+                            <button onclick="handlePrintSingleDefault()" class="py-2 bg-purple-600 rounded-lg font-black text-white text-[9px] uppercase shadow hover:bg-purple-500 active:scale-95">📄 Cetak 1</button>
+                            <button onclick="handlePrintComposite()" class="py-2 bg-indigo-600 rounded-lg font-black text-white text-[9px] uppercase shadow hover:bg-indigo-500 active:scale-95">田 Cetak 4</button>
                         </div>
-                         <button id="btn-save-drive" onclick="uploadToDrive()" class="w-full py-3 bg-blue-600 rounded-xl font-black text-white text-[10px] uppercase shadow-lg hover:bg-blue-500 transition-all">☁️ Upload Ke Drive</button>
-                        <button onclick="location.reload()" class="w-full py-3 glass rounded-xl font-bold text-white/50 text-[10px] uppercase hover:bg-white/10 hover:text-white transition-all">Reset Total</button>
+                         <button id="btn-save-drive" onclick="uploadToDrive()" class="w-full py-2 bg-blue-600 rounded-lg font-black text-white text-[9px] uppercase shadow hover:bg-blue-500 active:scale-95">☁️ Drive</button>
+                        <button onclick="location.reload()" class="w-full py-2 glass rounded-lg font-bold text-white/50 text-[9px] uppercase hover:bg-white/10 hover:text-white active:scale-95">Reset</button>
                     </div>
                 </div>
-                <div class="h-10"></div> 
+                <div class="h-8"></div> 
             </div>
         </div>
     </div>
 
-    <div id="remote-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden backdrop-blur-sm"><div class="glass p-8 rounded-[2.5rem] text-center max-w-sm w-full border border-emerald-500/50 shadow-2xl scale-95"><h2 class="text-xl font-black mb-6 text-emerald-400 uppercase">Remote HP</h2><div class="bg-white p-4 rounded-3xl inline-block mb-6 shadow-inner"><div id="qrcode"></div></div><p id="remote-status" class="text-[10px] font-bold text-yellow-500 mb-6 uppercase italic animate-pulse">Menunggu Koneksi...</p><button onclick="closeRemoteModal()" class="w-full py-3 bg-white/5 hover:bg-white/10 rounded-xl text-neutral-400 font-bold uppercase text-[10px]">Tutup</button></div></div>
-    <div id="download-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden backdrop-blur-sm"><div class="glass p-8 rounded-[2.5rem] text-center max-w-sm w-full border border-emerald-500/50 shadow-2xl scale-95"><div class="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/40"><span class="text-3xl text-white">✅</span></div><h2 class="text-xl font-black mb-2 text-white uppercase italic">Berhasil!</h2><p id="success-msg" class="text-xs text-white/70 mb-8 leading-relaxed">Foto telah dikirim ke Google Drive.</p><button onclick="closeDownloadModal()" class="w-full py-4 bg-emerald-600 rounded-xl font-black text-xs uppercase hover:bg-emerald-500 transition-all shadow-lg">Lanjut</button></div></div>
+    <div id="remote-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden backdrop-blur-sm"><div class="glass p-6 rounded-[2rem] text-center max-w-xs w-full border border-emerald-500/50 shadow-2xl scale-95"><h2 class="text-lg font-black mb-4 text-emerald-400 uppercase">Remote HP</h2><div class="bg-white p-3 rounded-2xl inline-block mb-4 shadow-inner"><div id="qrcode"></div></div><p id="remote-status" class="text-[9px] font-bold text-yellow-500 mb-4 uppercase italic animate-pulse">Menunggu...</p><button onclick="closeRemoteModal()" class="w-full py-2 bg-white/5 hover:bg-white/10 rounded-lg text-neutral-400 font-bold uppercase text-[9px]">Tutup</button></div></div>
+    <div id="download-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden backdrop-blur-sm"><div class="glass p-6 rounded-[2rem] text-center max-w-xs w-full border border-emerald-500/50 shadow-2xl scale-95"><div class="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-emerald-500/40"><span class="text-2xl text-white">✅</span></div><h2 class="text-lg font-black mb-2 text-white uppercase italic">Berhasil!</h2><p id="success-msg" class="text-[10px] text-white/70 mb-6 leading-relaxed">Terkirim ke Drive.</p><button onclick="closeDownloadModal()" class="w-full py-3 bg-emerald-600 rounded-xl font-black text-[10px] uppercase hover:bg-emerald-500 transition-all shadow-lg">Lanjut</button></div></div>
 
     <script>
+        // --- LOGIC ASLI (KAMERA DUMMY MODE JIKA DI PC) ---
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi8CZXia2AuYICDY67-cs7d0tF-uDfZTNxK7C84p-HsN-S4rQqrHWZxQ9k2EBaAGNWbA/exec"; 
         
-        // --- DATA ASSETS ---
-        const emojis = [
-            '😎','🔥','✨','❤️','⭐','📸','🎓','🎉','💻','✌️',
-            '👍','🥰','🤩','🤪','🥳','👻','👽','🤖','👾','🎃',
-            '👑','💍','💄','💋','👀','🧠','💪','🤙','🙌','👐',
-            '🌹','🌻','🌷','💐','🌸','🍀','🍄','🌍','🌙','☀️',
-            '⚡','❄️','🔥','💧','🎈','🎁','🎀','🎊','🧸','🖼️'
-        ];
-
+        const emojis = ['😎','🔥','✨','❤️','⭐','📸','🎓','🎉','💻','✌️','👍','🥰','🤩','🤪','🥳','👻','👽','🤖','👾','🎃','👑','💍','💄','💋','👀','🧠','💪','🤙','🙌','👐','🌹','🌻','🌷','💐','🌸','🍀','🍄','🌍','🌙','☀️','⚡','❄️','🔥','💧','🎈','🎁','🎀','🎊','🧸','🖼️'];
         const frames = [
             { name: 'Putih', file: 'white_frame.png', color: 'bg-gray-200 text-black' },
             { name: 'Hitam', file: 'dark_frame.png', color: 'bg-gray-800' },
             { name: 'TKJ', file: 'tkj_frame.png', color: 'bg-emerald-600' },
-            { name: 'Frame 4', file: 'frame_04.png', color: 'bg-blue-600' },
-            { name: 'Frame 5', file: 'frame_05.png', color: 'bg-purple-600' },
-            { name: 'Frame 6', file: 'frame_06.png', color: 'bg-pink-600' },
-            { name: 'Frame 7', file: 'frame_07.png', color: 'bg-yellow-600' },
-            { name: 'Frame 8', file: 'frame_08.png', color: 'bg-red-600' },
-            { name: 'Frame 9', file: 'frame_09.png', color: 'bg-indigo-600' },
-            { name: 'Frame 10', file: 'frame_10.png', color: 'bg-cyan-600' }
+            { name: 'Fr 4', file: 'frame_04.png', color: 'bg-blue-600' },
+            { name: 'Fr 5', file: 'frame_05.png', color: 'bg-purple-600' },
+            { name: 'Fr 6', file: 'frame_06.png', color: 'bg-pink-600' },
+            { name: 'Fr 7', file: 'frame_07.png', color: 'bg-yellow-600' },
+            { name: 'Fr 8', file: 'frame_08.png', color: 'bg-red-600' },
+            { name: 'Fr 9', file: 'frame_09.png', color: 'bg-indigo-600' },
+            { name: 'Fr 10', file: 'frame_10.png', color: 'bg-cyan-600' }
         ];
-
-        const fonts = [
-            { name: 'Modern', family: 'Plus Jakarta Sans' }, { name: 'Retro', family: 'Press Start 2P' },
-            { name: 'Hand', family: 'Pacifico' }, { name: 'Bold', family: 'Righteous' },
-            { name: 'Cute', family: 'Fredoka' }, { name: 'Comic', family: 'Bangers' }
-        ];
+        const fonts = [{ name: 'Modern', family: 'Plus Jakarta Sans' }, { name: 'Retro', family: 'Press Start 2P' }, { name: 'Hand', family: 'Pacifico' }, { name: 'Bold', family: 'Righteous' }, { name: 'Cute', family: 'Fredoka' }, { name: 'Comic', family: 'Bangers' }];
         const colors = ['#ffffff', '#000000', '#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#f472b6', '#06b6d4'];
 
         let fCanvas, currentPhotos = [], isProcessing = false;
@@ -276,50 +228,63 @@
         }
         getConnectedCameras(); videoSelect.addEventListener('change', () => { startCamera(); });
 
-        function resetAndStart() { savedSessions = [null, null, null, null]; currentSlotIndex = 0; updateSessionUI(); startSequence(); }
+        function resetAndStart() { savedSessions = [null, null, null, null]; currentSlotIndex = 0; startSequence(); }
         function toggleMirror() { isMirror = !isMirror; document.getElementById('mirror-toggle').innerText = isMirror ? "Mode Cermin: ON" : "Mode Cermin: OFF"; video.style.transform = isMirror ? "scaleX(-1)" : "scaleX(1)"; }
+        
         async function startCamera() {
-            try { if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+            try { 
+                if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
                 const constraints = { video: videoSelect.value ? { deviceId: { exact: videoSelect.value } } : { facingMode: currentFacingMode }, audio: false };
-                const stream = await navigator.mediaDevices.getUserMedia(constraints); video.srcObject = stream; video.style.transform = isMirror ? "scaleX(-1)" : "scaleX(1)";
-            } catch (e) {}
+                const stream = await navigator.mediaDevices.getUserMedia(constraints); 
+                video.srcObject = stream; 
+                video.style.transform = isMirror ? "scaleX(-1)" : "scaleX(1)"; 
+                try { await video.play(); } catch(e) { console.log("Autoplay blocked"); }
+            } catch (e) { console.log("Camera error ignored for dev mode"); }
         }
 
         function changeState(id) { document.querySelectorAll('.state-screen').forEach(s => s.classList.remove('active-state')); document.getElementById(id).classList.add('active-state');
-            if(id === 'state-capture') { photosTakenCount = 0; currentPhotos = []; document.getElementById('active-session-display').innerText = currentSlotIndex + 1; startCamera(); } 
-            else if (id === 'state-edit') { setTimeout(adjustLayout, 100); }
+            if(id === 'state-capture') { photosTakenCount = 0; currentPhotos = []; document.getElementById('capture-session-disp').innerText = currentSlotIndex + 1; startCamera(); } 
+            else if (id === 'state-edit') { setTimeout(() => { adjustLayout(); updateSessionUI(); }, 100); }
         }
         function startSequence() { changeState('state-capture'); }
         function handleShootAction() { if (!isProcessing) takeSinglePhoto(); }
 
-        // --- UPDATED CAPTURE LOGIC (READY?, 3, 2, 1, SMILE!) ---
         async function takeSinglePhoto() {
-            isProcessing = true; document.getElementById('btn-shoot').style.visibility = 'hidden';
-            const cnt = document.getElementById('countdown-container'); const txt = document.getElementById('countdown-text');
-            document.getElementById('photo-indicator').classList.remove('hidden'); document.getElementById('current-photo-num').innerText = photosTakenCount + 1;
-            
-            cnt.classList.remove('hidden'); 
-            
-            // Sequence Countdown Baru
-            const steps = ["READY?", "3", "2", "1", "SMILE!"];
-            
-            for (let step of steps) {
-                txt.innerText = step;
-                // Jika "SMILE!", durasi lebih cepat agar pas dengan flash
-                let duration = (step === "SMILE!") ? 600 : 1000;
-                await new Promise(r => setTimeout(r, duration));
-            }
-
-            cnt.classList.add('hidden');
-            document.getElementById('flash-overlay').style.opacity = "1";
-            
-            const vw = video.videoWidth; const vh = video.videoHeight;
-            const cap = document.createElement('canvas'); cap.width = vw; cap.height = vh;
-            const ctx = cap.getContext('2d'); if(isMirror) { ctx.translate(vw, 0); ctx.scale(-1, 1); } ctx.drawImage(video, 0, 0, vw, vh);
-            currentPhotos.push(cap.toDataURL('image/jpeg', 0.9)); photosTakenCount++;
-            setTimeout(() => document.getElementById('flash-overlay').style.opacity = "0", 150); await new Promise(r=>setTimeout(r,800));
-            if(photosTakenCount<totalPhotosToTake) { isProcessing=false; document.getElementById('btn-shoot').style.visibility='visible'; document.getElementById('capture-instruction').innerText="Klik Lagi"; }
-            else { initEditState(); }
+            if (isProcessing) return;
+            try {
+                isProcessing = true; document.getElementById('btn-shoot').style.visibility = 'hidden';
+                const cnt = document.getElementById('countdown-container'); const txt = document.getElementById('countdown-text');
+                document.getElementById('photo-indicator').classList.remove('hidden'); document.getElementById('current-photo-num').innerText = photosTakenCount + 1;
+                
+                cnt.classList.remove('hidden'); 
+                const steps = ["READY?", "3", "2", "1", "SMILE!"];
+                for (let step of steps) { txt.innerText = step; await new Promise(r => setTimeout(r, (step==="READY?"||step==="SMILE!")?800:1000)); }
+                cnt.classList.add('hidden');
+                document.getElementById('flash-overlay').style.opacity = "1";
+                
+                // FALLBACK LOGIC
+                const vw = video.videoWidth || 1280; const vh = video.videoHeight || 720;
+                const cap = document.createElement('canvas'); cap.width = vw; cap.height = vh;
+                const ctx = cap.getContext('2d');
+                
+                if(video.videoWidth > 0) {
+                    if(isMirror) { ctx.translate(vw, 0); ctx.scale(-1, 1); } ctx.drawImage(video, 0, 0, vw, vh);
+                } else {
+                    // DUMMY IMAGE
+                    ctx.fillStyle = "#111"; ctx.fillRect(0,0,vw,vh);
+                    ctx.fillStyle = "#fff"; ctx.font = "bold 40px sans-serif"; ctx.fillText("NO CAMERA", 50, 100);
+                }
+                
+                currentPhotos.push(cap.toDataURL('image/jpeg', 0.9)); photosTakenCount++;
+                setTimeout(() => document.getElementById('flash-overlay').style.opacity = "0", 150); 
+                await new Promise(r => setTimeout(r, 800));
+                
+                if(photosTakenCount < totalPhotosToTake) { 
+                    document.getElementById('btn-shoot').style.visibility = 'visible'; 
+                    document.getElementById('capture-instruction').innerText = "Klik Lagi"; 
+                } else { initEditState(); }
+            } catch (err) { console.error(err); document.getElementById('btn-shoot').style.visibility = 'visible'; } 
+            finally { if(photosTakenCount < totalPhotosToTake) isProcessing = false; }
         }
 
         async function initEditState() {
@@ -330,14 +295,12 @@
                     renderEmojiList(); renderFrameList(); renderFontList(); renderColorList();
                     fCanvas.on('object:modified', saveCanvasToSessionVar); fCanvas.on('object:added', saveCanvasToSessionVar);
                 } else { fCanvas.clear(); }
-                
                 const mx=35, mt=45, gap=25, tw=310, th=174;
                 for(let i=0; i<currentPhotos.length; i++) {
                     await new Promise(res => {
                         fabric.Image.fromURL(currentPhotos[i], img => {
                             const sc = Math.max(tw/img.width, th/img.height);
-                            const offX = (tw - img.width*sc)/2; const offY = (th - img.height*sc)/2;
-                            const topY = mt + (i*(th+gap));
+                            const offX = (tw - img.width*sc)/2; const offY = (th - img.height*sc)/2; const topY = mt + (i*(th+gap));
                             img.set({ left: mx+offX, top: topY+offY, scaleX: sc, scaleY: sc, selectable: false, evented: false });
                             img.set({ clipPath: new fabric.Rect({ left: mx, top: topY, width: tw, height: th, absolutePositioned: true }) });
                             fCanvas.add(img); res();
@@ -351,68 +314,14 @@
 
         function saveCanvasToSessionVar() { fCanvas.renderAll(); savedSessions[currentSlotIndex] = fCanvas.toDataURL({ format: 'png', multiplier: 2 }); updateSessionUI(); }
 
-        // --- UPDATED RENDER LISTS ---
-        function renderEmojiList() {
-            const container = document.getElementById('emoji-slider'); container.innerHTML = '';
-            emojis.forEach(emoji => {
-                const btn = document.createElement('button');
-                btn.className = "flex-shrink-0 w-12 h-12 text-2xl bg-white/5 hover:bg-white/20 rounded-xl transition-all border border-white/5";
-                btn.innerText = emoji;
-                btn.onclick = () => {
-                    const text = new fabric.Text(emoji, { fontSize: 60, left: 150, top: 400 });
-                    fCanvas.add(text); fCanvas.setActiveObject(text);
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        function renderFrameList() {
-            const container = document.getElementById('frame-slider'); container.innerHTML = '';
-            frames.forEach(frame => {
-                const btn = document.createElement('button');
-                // Menggunakan properti color dari array frames untuk styling tombol
-                btn.className = `flex-shrink-0 px-4 py-3 text-[10px] font-bold uppercase rounded-xl transition-all border border-white/10 hover:scale-105 ${frame.color || 'bg-white/10'}`;
-                btn.innerText = frame.name;
-                btn.onclick = () => changeFrame(frame.file);
-                container.appendChild(btn);
-            });
-        }
-
-        function renderFontList() {
-            const c = document.getElementById('font-slider'); c.innerHTML = '';
-            fonts.forEach(f => {
-                const b = document.createElement('button'); b.className = `flex-shrink-0 px-4 py-2 text-xs rounded-lg transition-all border ${selectedFont === f.family ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white/5 text-white/70 border-white/10'}`;
-                b.innerText = f.name; b.style.fontFamily = f.family;
-                b.onclick = () => { selectedFont = f.family; renderFontList(); const o = fCanvas.getActiveObject(); if(o && o.type==='i-text') { o.set("fontFamily", selectedFont); fCanvas.requestRenderAll(); } };
-                c.appendChild(b);
-            });
-        }
-        function renderColorList() {
-            const c = document.getElementById('color-slider'); c.innerHTML = '';
-            colors.forEach(col => {
-                const b = document.createElement('button'); b.className = `flex-shrink-0 w-8 h-8 rounded-full border-2 transition-all ${selectedColor === col ? 'border-white scale-110' : 'border-transparent opacity-80'}`;
-                b.style.backgroundColor = col;
-                b.onclick = () => { selectedColor = col; renderColorList(); const o = fCanvas.getActiveObject(); if(o && (o.type==='i-text'||o.type==='text')) { o.set("fill", selectedColor); fCanvas.requestRenderAll(); } };
-                c.appendChild(b);
-            });
-        }
-        function addTextToCanvas() {
-            const v = document.getElementById('custom-text-input').value; if(!v) return;
-            const t = new fabric.IText(v, { left: 100, top: 400, fontSize: 40, fill: selectedColor, fontFamily: selectedFont, fontWeight: 'bold' });
-            fCanvas.add(t); fCanvas.setActiveObject(t); document.getElementById('custom-text-input').value = "";
-        }
+        function renderEmojiList() { const c = document.getElementById('emoji-slider'); c.innerHTML = ''; emojis.forEach(e => { const b = document.createElement('button'); b.className = "flex-shrink-0 w-8 h-8 text-lg bg-white/5 hover:bg-white/20 rounded-lg border border-white/5"; b.innerText = e; b.onclick = () => { const t = new fabric.Text(e, { fontSize: 60, left: 150, top: 400 }); fCanvas.add(t); fCanvas.setActiveObject(t); }; c.appendChild(b); }); }
+        function renderFrameList() { const c = document.getElementById('frame-slider'); c.innerHTML = ''; frames.forEach(f => { const b = document.createElement('button'); b.className = `flex-shrink-0 px-3 py-2 text-[8px] font-bold uppercase rounded-lg border border-white/10 ${f.color||'bg-white/10'}`; b.innerText = f.name; b.onclick = () => changeFrame(f.file); c.appendChild(b); }); }
+        function renderFontList() { const c = document.getElementById('font-slider'); c.innerHTML = ''; fonts.forEach(f => { const b = document.createElement('button'); b.className = `flex-shrink-0 px-3 py-1 text-[9px] rounded-lg border ${selectedFont===f.family?'bg-emerald-500 text-white':'bg-white/5 text-white/70'}`; b.innerText = f.name; b.style.fontFamily = f.family; b.onclick = () => { selectedFont = f.family; renderFontList(); const o = fCanvas.getActiveObject(); if(o&&o.type==='i-text') { o.set("fontFamily",selectedFont); fCanvas.requestRenderAll(); } }; c.appendChild(b); }); }
+        function renderColorList() { const c = document.getElementById('color-slider'); c.innerHTML = ''; colors.forEach(col => { const b = document.createElement('button'); b.className = `flex-shrink-0 w-6 h-6 rounded-full border-2 ${selectedColor===col?'border-white scale-110':'border-transparent opacity-80'}`; b.style.backgroundColor = col; b.onclick = () => { selectedColor = col; renderColorList(); const o = fCanvas.getActiveObject(); if(o&&(o.type==='i-text'||o.type==='text')) { o.set("fill",selectedColor); fCanvas.requestRenderAll(); } }; c.appendChild(b); }); }
+        function addTextToCanvas() { const v = document.getElementById('custom-text-input').value; if(!v) return; const t = new fabric.IText(v, { left: 100, top: 400, fontSize: 40, fill: selectedColor, fontFamily: selectedFont, fontWeight: 'bold' }); fCanvas.add(t); fCanvas.setActiveObject(t); document.getElementById('custom-text-input').value = ""; }
         function changeFrame(f) { const o = fCanvas.getObjects(); o.forEach(x => { if(x.isFrame) fCanvas.remove(x); }); fabric.Image.fromURL(`assets/frames/${f}`, i => { i.set({ left: 0, top: 0, selectable: false, isFrame: true, evented: false }); i.scaleToWidth(fCanvas.width); fCanvas.add(i); i.bringToFront(); }); }
 
-        function updateSessionUI() {
-            const c = document.getElementById('session-slots-container'); c.innerHTML = ''; let fc = 0;
-            savedSessions.forEach((d, i) => {
-                const e = document.createElement('div'); e.className = `session-slot ${i===currentSlotIndex?'active-slot':''}`;
-                if(d) { fc++; e.innerHTML = `<img src="${d}"><div class="delete-overlay" onclick="deleteSession(${i})"><span class="text-white text-xl">🗑️</span></div>`; }
-                else e.innerHTML = `<div class="flex items-center justify-center w-full h-full text-white/20 text-xs font-bold border-dashed border-2 border-white/10">${i+1}</div>`;
-                c.appendChild(e);
-            });
-            document.getElementById('session-count').innerText = `${fc}/4`; document.getElementById('btn-next-session').style.display = fc>=4?'none':'flex';
-        }
+        function updateSessionUI() { const c = document.getElementById('session-slots-container'); c.innerHTML = ''; let fc = 0; savedSessions.forEach((d, i) => { const e = document.createElement('div'); e.className = `session-slot ${i===currentSlotIndex?'active-slot':''}`; if(d) { fc++; e.innerHTML = `<img src="${d}"><div class="delete-overlay" onclick="deleteSession(${i})"><span class="text-white text-lg">🗑️</span></div>`; } else { e.innerHTML = `<div class="flex items-center justify-center w-full h-full text-white/20 text-[10px] font-bold border-dashed border-2 border-white/10">${i+1}</div>`; } c.appendChild(e); }); document.getElementById('session-count').innerText = `${fc}/4`; document.getElementById('btn-next-session').style.display = fc>=4?'none':'flex'; }
         function handleNextSession() { const n = savedSessions.findIndex(s => s===null); if(n!==-1) { currentSlotIndex=n; startSequence(); } else alert("Penuh!"); }
         function deleteSession(i) { if(confirm("Foto ulang?")) { savedSessions[i]=null; currentSlotIndex=i; startSequence(); } }
 
@@ -423,7 +332,7 @@
         
         function openRemoteModal() { document.getElementById('remote-modal').classList.remove('hidden'); if (!peer) { peer = new Peer(); peer.on('open', id => { document.getElementById("qrcode").innerHTML=""; new QRCode(document.getElementById("qrcode"), { text: window.location.origin+window.location.pathname.replace('index.html','')+"remote.html?remoteId="+id, width:200, height:200 }); }); peer.on('connection', c => { conn = c; document.getElementById('remote-status').innerText = "TERHUBUNG!"; conn.on('data', d => { if(d==='SHOT') { const act = document.querySelector('.active-state').id; if(act==='state-ready') { resetAndStart(); closeRemoteModal(); } else if(act==='state-capture') handleShootAction(); } else if(d==='SWITCH_CAM') switchCamera(); else if(d==='TOGGLE_MIRROR') toggleMirror(); }); }); } }
         function closeRemoteModal() { document.getElementById('remote-modal').classList.add('hidden'); }
-        async function uploadToDrive() { const b=document.getElementById('btn-save-drive'); b.disabled=true; b.innerText="UPLOADING..."; fCanvas.discardActiveObject().renderAll(); try { await fetch(GOOGLE_SCRIPT_URL, {method:'POST', mode:'no-cors', body:JSON.stringify({image:fCanvas.toDataURL({format:'png',multiplier:2}), filename:"tkj_slot_"+(currentSlotIndex+1)})}); document.getElementById('download-modal').classList.remove('hidden'); } catch(e){} b.disabled=false; b.innerText="☁️ Upload Ke Drive"; }
+        async function uploadToDrive() { const b=document.getElementById('btn-save-drive'); b.disabled=true; b.innerText="UPLOADING..."; fCanvas.discardActiveObject().renderAll(); try { await fetch(GOOGLE_SCRIPT_URL, {method:'POST', mode:'no-cors', body:JSON.stringify({image:fCanvas.toDataURL({format:'png',multiplier:2}), filename:"tkj_slot_"+(currentSlotIndex+1)})}); document.getElementById('download-modal').classList.remove('hidden'); } catch(e){} b.disabled=false; b.innerText="☁️ Drive"; }
         function closeDownloadModal() { document.getElementById('download-modal').classList.add('hidden'); }
         window.addEventListener('keydown', e => { if(e.code==='Space' && document.activeElement.tagName!=='INPUT') { const a = document.querySelector('.active-state').id; if(a==='state-capture') handleShootAction(); else if(a==='state-ready') resetAndStart(); } });
         function switchCamera() { videoSelect.value=""; currentFacingMode = currentFacingMode==='user'?'environment':'user'; startCamera(); }
