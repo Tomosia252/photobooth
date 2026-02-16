@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TKJ Photobooth Pro - Ultimate Editor</title>
+    <title>TKJ Photobooth Pro - Framed Cam</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
@@ -23,6 +23,7 @@
             margin: 0; overflow: hidden; height: 100vh; width: 100vw;
         }
         
+        /* UI Utilities */
         .glass { background: rgba(6, 78, 59, 0.4); backdrop-filter: blur(15px); border: 1px solid rgba(16, 185, 129, 0.3); }
         .modal-overlay { z-index: 1000 !important; background: rgba(0,0,0,0.9); }
         
@@ -36,8 +37,34 @@
         .state-screen { display: none; width: 100%; height: 100%; position: fixed; inset: 0; z-index: 10; }
         .active-state { display: flex !important; }
 
-        #video-background { position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; z-index: 0; background: black; }
-        #video-preview { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        /* --- VISUAL KAMERA BARU (BINGKAI) --- */
+        #state-capture {
+            /* Flex untuk menengahkan konten */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, #064e3b 0%, #011a13 100%); /* Background Hijau Elegan */
+        }
+
+        .camera-frame-container {
+            position: relative;
+            width: 75%; /* Ukuran 75% layar sesuai request */
+            max-width: 800px;
+            aspect-ratio: 16/9;
+            border: 8px solid #10b981; /* Border Emerald Tebal */
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(16, 185, 129, 0.3), 0 20px 30px rgba(0,0,0,0.5);
+            background: black;
+            z-index: 10;
+        }
+
+        #video-preview { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            transform: scaleX(-1); 
+        }
 
         /* Session Preview Slots */
         .session-slot {
@@ -96,33 +123,43 @@
         </div>
     </div>
 
-    <div id="state-capture" class="state-screen bg-black">
-        <div id="video-background"><video id="video-preview" autoplay playsinline></video></div>
-        <div class="relative w-full h-full z-10 flex flex-col justify-between p-6">
-            <div class="flex justify-between items-start">
-                <div id="photo-indicator" class="bg-black/40 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 hidden">
-                    <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Foto: <span id="current-photo-num" class="text-white text-lg ml-1">1</span>/3</span>
-                </div>
-                <div class="bg-emerald-600/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg">
-                    <span class="text-[10px] font-black text-white uppercase tracking-widest">Sesi Aktif: <span id="active-session-display">1</span>/4</span>
-                </div>
+    <div id="state-capture" class="state-screen">
+        
+        <div class="absolute top-6 left-0 right-0 flex justify-between px-8 z-20 w-full max-w-4xl mx-auto">
+            <div class="glass px-4 py-2 rounded-full">
+                <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">TKJ CAM</span>
             </div>
-            
-            <div id="countdown-container" class="absolute inset-0 flex items-center justify-center pointer-events-none hidden">
-                <span id="countdown-text" class="text-[6rem] md:text-[8rem] font-black text-emerald-400 animate-pulse drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] text-center leading-none">READY?</span>
+            <div id="photo-indicator" class="glass px-4 py-2 rounded-full border border-white/10 hidden">
+                <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Foto: <span id="current-photo-num" class="text-white text-lg ml-1">1</span>/3</span>
             </div>
-
-            <div class="flex flex-col items-center gap-4 pb-4">
-                <div class="flex items-center gap-8">
-                    <button onclick="switchCamera()" class="w-14 h-14 rounded-full bg-black/40 border border-white/20 text-white backdrop-blur-md flex items-center justify-center active:scale-90 transition-all hover:bg-emerald-600/80 shadow-lg"><span class="text-xl">🔄</span></button>
-                    <button id="btn-shoot" onclick="handleShootAction()" class="w-24 h-24 rounded-full bg-white/10 border-[6px] border-white flex items-center justify-center active:scale-90 transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:bg-emerald-500 hover:border-emerald-300 backdrop-blur-sm"><span class="text-4xl">📸</span></button>
-                    <button onclick="toggleMirror()" class="w-14 h-14 rounded-full bg-black/40 border border-white/20 text-white backdrop-blur-md flex items-center justify-center active:scale-90 transition-all hover:bg-emerald-600/80 shadow-lg"><span class="text-xl">🪞</span></button>
-                </div>
-                <div class="bg-black/50 px-6 py-2 rounded-full backdrop-blur-md border border-white/10">
-                    <p id="capture-instruction" class="text-[10px] font-bold tracking-[0.2em] uppercase text-white/90">Tekan Tombol / Spasi</p>
-                </div>
+            <div class="bg-emerald-600/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg">
+                <span class="text-[10px] font-black text-white uppercase tracking-widest">Sesi: <span id="active-session-display">1</span>/4</span>
             </div>
         </div>
+
+        <div class="camera-frame-container">
+            <video id="video-preview" autoplay playsinline muted></video>
+            
+            <div id="countdown-container" class="absolute inset-0 flex items-center justify-center pointer-events-none hidden bg-black/40 backdrop-blur-sm z-30">
+                <span id="countdown-text" class="text-[6rem] md:text-[8rem] font-black text-emerald-400 animate-pulse drop-shadow-[0_0_50px_rgba(0,0,0,0.8)] text-center leading-none">READY?</span>
+            </div>
+        </div>
+
+        <div class="mt-6 flex items-center gap-8 z-20">
+            <button onclick="switchCamera()" class="w-14 h-14 rounded-full glass text-white flex items-center justify-center active:scale-90 transition-all hover:bg-white/10 shadow-lg group">
+                <span class="text-2xl group-hover:rotate-180 transition-transform duration-500">🔄</span>
+            </button>
+            
+            <button id="btn-shoot" onclick="handleShootAction()" class="w-20 h-20 rounded-full bg-emerald-500 border-4 border-emerald-300 flex items-center justify-center active:scale-90 transition-all shadow-[0_0_40px_rgba(16,185,129,0.6)] hover:bg-emerald-400 hover:scale-105">
+                <span class="text-4xl">📸</span>
+            </button>
+            
+            <button onclick="toggleMirror()" class="w-14 h-14 rounded-full glass text-white flex items-center justify-center active:scale-90 transition-all hover:bg-white/10 shadow-lg">
+                <span class="text-2xl">🪞</span>
+            </button>
+        </div>
+        
+        <p id="capture-instruction" class="mt-2 text-[10px] font-bold tracking-[0.2em] uppercase text-white/40">Tekan Tombol / Spasi</p>
     </div>
 
     <div id="state-edit" class="state-screen flex-row bg-black/95">
@@ -197,7 +234,6 @@
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi8CZXia2AuYICDY67-cs7d0tF-uDfZTNxK7C84p-HsN-S4rQqrHWZxQ9k2EBaAGNWbA/exec"; 
         
         // --- DATA ASSETS ---
-        // Emoji Text Array (Expanded)
         const emojis = [
             '😎','🔥','✨','❤️','⭐','📸','🎓','🎉','💻','✌️',
             '👍','🥰','🤩','🤪','🥳','👻','👽','🤖','👾','🎃',
@@ -206,7 +242,6 @@
             '⚡','❄️','🔥','💧','🎈','🎁','🎀','🎊','🧸','🖼️'
         ];
 
-        // Frame List (10 Frames)
         const frames = [
             { name: 'Putih', file: 'white_frame.png', color: 'bg-gray-200 text-black' },
             { name: 'Hitam', file: 'dark_frame.png', color: 'bg-gray-800' },
