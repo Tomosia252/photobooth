@@ -249,13 +249,18 @@
         
         const emojis = ['😎','🔥','✨','❤️','⭐','📸','🎓','🎉','💻','✌️','👍','🥰','🤩','🤪','🥳','👻','👽','🤖','👾','🎃','👑','💍','💄','💋','👀','🧠','💪','🤙','🙌','👐','🌹','🌻','🌷','💐','🌸','🍀','🍄','🌍','🌙','☀️','⚡','❄️','🔥','💧','🎈','🎁','🎀','🎊','🧸','🖼️'];
         
-        // PENGATURAN NAMA FILE FRAME 1 HINGGA 5
+        // PENGATURAN NAMA FILE FRAME 1 HINGGA 10
         const frames = [
             { name: 'Frame 1', file: 'frame1.png', color: 'bg-gray-200 text-black' },
             { name: 'Frame 2', file: 'frame2.png', color: 'bg-gray-800' },
             { name: 'Frame 3', file: 'frame3.png', color: 'bg-emerald-600' },
             { name: 'Frame 4', file: 'frame4.png', color: 'bg-blue-600' },
-            { name: 'Frame 5', file: 'frame5.png', color: 'bg-purple-600' }
+            { name: 'Frame 5', file: 'frame5.png', color: 'bg-purple-600' },
+            { name: 'Frame 6', file: 'frame6.png', color: 'bg-pink-600' },
+            { name: 'Frame 7', file: 'frame7.png', color: 'bg-yellow-600' },
+            { name: 'Frame 8', file: 'frame8.png', color: 'bg-red-600' },
+            { name: 'Frame 9', file: 'frame9.png', color: 'bg-yellow-900' },
+            { name: 'Frame 10', file: 'frame10.png', color: 'bg-cyan-600' }
         ];
 
         const fonts = [{ name: 'Modern', family: 'Plus Jakarta Sans' }, { name: 'Retro', family: 'Press Start 2P' }, { name: 'Hand', family: 'Pacifico' }, { name: 'Bold', family: 'Righteous' }, { name: 'Cute', family: 'Fredoka' }, { name: 'Comic', family: 'Bangers' }];
@@ -438,6 +443,7 @@
 
         function adjustLayout() { const c = document.getElementById('canvas-scaler-container'); const s = document.getElementById('canvas-scaler'); if(s&&c) { const sc = Math.min((c.clientWidth-20)/380, (c.clientHeight-20)/820); s.style.transform = `scale(${Math.min(sc,1)})`; } } window.addEventListener('resize', adjustLayout);
         
+        // Modal Remote
         function openRemoteModal() { 
             document.getElementById('remote-modal').classList.remove('hidden'); 
             if (!peer) { 
