@@ -192,10 +192,11 @@
                     <div class="grid grid-cols-1 gap-2">
                         <button id="btn-next-session" onclick="handleNextSession()" class="w-full py-3 bg-yellow-600 rounded-xl font-black text-white text-[10px] uppercase shadow-lg hover:bg-yellow-500 active:scale-95 flex items-center justify-center gap-2"><span>📸</span> Foto Lagi</button>
                         
-                        <div class="grid grid-cols-3 gap-2">
-                            <button onclick="handlePrintSingleDefault()" class="py-2 bg-purple-600 rounded-lg font-black text-white text-[8px] uppercase shadow hover:bg-purple-500 active:scale-95">📄 C1</button>
-                            <button onclick="handlePrintComposite()" class="py-2 bg-indigo-600 rounded-lg font-black text-white text-[8px] uppercase shadow hover:bg-indigo-500 active:scale-95">田 C4</button>
-                            <button onclick="downloadLocal()" class="py-2 bg-teal-600 rounded-lg font-black text-white text-[8px] uppercase shadow hover:bg-teal-500 active:scale-95">⬇️ Save</button>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="handlePrintSingleDefault()" class="py-2 bg-purple-600 rounded-lg font-black text-white text-[8px] uppercase shadow hover:bg-purple-500 active:scale-95">📄 Cetak 1</button>
+                            <button onclick="handlePrintComposite()" class="py-2 bg-indigo-600 rounded-lg font-black text-white text-[8px] uppercase shadow hover:bg-indigo-500 active:scale-95">田 Cetak 4</button>
+                            <button onclick="downloadLocal()" class="py-2 bg-teal-600 rounded-lg font-black text-white text-[8px] uppercase shadow hover:bg-teal-500 active:scale-95">⬇️ Save 1</button>
+                            <button id="btn-download-all" onclick="downloadAllLocal()" class="py-2 bg-teal-800 rounded-lg font-black text-white text-[8px] uppercase shadow hover:bg-teal-700 active:scale-95 opacity-50 cursor-not-allowed" disabled>⬇️ Save Semua</button>
                         </div>
                         
                         <button id="btn-save-drive" onclick="uploadToDrive()" class="w-full py-2 bg-blue-600 rounded-lg font-black text-white text-[9px] uppercase shadow hover:bg-blue-500 active:scale-95">☁️ Drive</button>
@@ -249,7 +250,6 @@
         
         const emojis = ['😎','🔥','✨','❤️','⭐','📸','🎓','🎉','💻','✌️','👍','🥰','🤩','🤪','🥳','👻','👽','🤖','👾','🎃','👑','💍','💄','💋','👀','🧠','💪','🤙','🙌','👐','🌹','🌻','🌷','💐','🌸','🍀','🍄','🌍','🌙','☀️','⚡','❄️','🔥','💧','🎈','🎁','🎀','🎊','🧸','🖼️'];
         
-        // PENGATURAN NAMA FILE FRAME 1 HINGGA 10
         const frames = [
             { name: 'Frame 1', file: 'frame1.png', color: 'bg-gray-200 text-black' },
             { name: 'Frame 2', file: 'frame2.png', color: 'bg-gray-800' },
@@ -270,7 +270,11 @@
         const video = document.getElementById('video-preview'); const videoSelect = document.getElementById('video-source');
         let peer, conn, isMirror = true, photosTakenCount = 0;
         const totalPhotosToTake = 3; let currentFacingMode = 'user'; 
-        let savedSessions = [null, null, null, null]; let currentSlotIndex = 0;
+        
+        let savedSessions = [null, null, null, null]; 
+        let sessionCanvasStates = [null, null, null, null];
+        let currentSlotIndex = 0;
+        
         let selectedFont = 'Plus Jakarta Sans'; let selectedColor = '#ffffff';
         let pendingDeleteIndex = null;
 
@@ -324,7 +328,12 @@
         }
         getConnectedCameras(); videoSelect.addEventListener('change', () => { startCamera(); });
 
-        function resetAndStart() { savedSessions = [null, null, null, null]; currentSlotIndex = 0; startSequence(); }
+        function resetAndStart() { 
+            savedSessions = [null, null, null, null]; 
+            sessionCanvasStates = [null, null, null, null];
+            currentSlotIndex = 0; 
+            startSequence(); 
+        }
         function toggleMirror() { isMirror = !isMirror; document.getElementById('mirror-toggle').innerText = isMirror ? "Mode Cermin: ON" : "Mode Cermin: OFF"; video.style.transform = isMirror ? "scaleX(-1)" : "scaleX(1)"; }
 
         async function startCamera() {
@@ -405,17 +414,55 @@
                         });
                     });
                 }
-                // PASTIKAN FRAME DEFAULT ADALAH FRAME 1
                 changeFrame('frame1.png'); isProcessing = false; document.getElementById('btn-shoot').style.visibility = 'visible';
                 adjustLayout(); saveCanvasToSessionVar();
             }, 100);
         }
 
-        function saveCanvasToSessionVar() { fCanvas.renderAll(); savedSessions[currentSlotIndex] = fCanvas.toDataURL({ format: 'png', multiplier: 2 }); updateSessionUI(); }
+        function saveCanvasToSessionVar() { 
+            if (!fCanvas) return;
+            fCanvas.renderAll(); 
+            savedSessions[currentSlotIndex] = fCanvas.toDataURL({ format: 'png', multiplier: 2 }); 
+            sessionCanvasStates[currentSlotIndex] = JSON.stringify(fCanvas.toJSON(['isFrame', 'selectable', 'evented']));
+            updateSessionUI(); 
+        }
+
+        function switchSession(index) {
+            if (index === currentSlotIndex || !savedSessions[index]) return;
+            saveCanvasToSessionVar();
+            currentSlotIndex = index;
+            document.getElementById('current-slot-info').innerText = currentSlotIndex + 1;
+            if (sessionCanvasStates[index]) {
+                fCanvas.loadFromJSON(sessionCanvasStates[index], function() {
+                    fCanvas.renderAll();
+                    updateSessionUI();
+                });
+            }
+        }
+
+        function duplicateSession(index) {
+            if (!savedSessions[index]) return;
+            const emptyIndex = savedSessions.findIndex(s => s === null);
+            if (emptyIndex !== -1) {
+                if (index === currentSlotIndex) { saveCanvasToSessionVar(); }
+                savedSessions[emptyIndex] = savedSessions[index];
+                sessionCanvasStates[emptyIndex] = sessionCanvasStates[index];
+                updateSessionUI();
+            } else { alert("Sesi penuh! Hapus salah satu sesi untuk menduplikat."); }
+        }
 
         function deleteSession(index) { pendingDeleteIndex = index; document.getElementById('delete-modal').classList.remove('hidden'); }
         function closeDeleteModal() { document.getElementById('delete-modal').classList.add('hidden'); pendingDeleteIndex = null; }
-        function confirmDelete() { if (pendingDeleteIndex !== null) { savedSessions[pendingDeleteIndex] = null; currentSlotIndex = pendingDeleteIndex; startSequence(); closeDeleteModal(); } }
+        
+        function confirmDelete() { 
+            if (pendingDeleteIndex !== null) { 
+                savedSessions[pendingDeleteIndex] = null; 
+                sessionCanvasStates[pendingDeleteIndex] = null;
+                if (currentSlotIndex === pendingDeleteIndex) { currentSlotIndex = pendingDeleteIndex; startSequence(); } 
+                else { updateSessionUI(); }
+                closeDeleteModal(); 
+            } 
+        }
 
         function renderEmojiList() { const c = document.getElementById('emoji-slider'); c.innerHTML = ''; emojis.forEach(e => { const b = document.createElement('button'); b.className = "flex-shrink-0 w-8 h-8 text-lg bg-white/5 hover:bg-white/20 rounded-lg border border-white/5"; b.innerText = e; b.onclick = () => { const t = new fabric.Text(e, { fontSize: 60, left: 150, top: 400 }); fCanvas.add(t); fCanvas.setActiveObject(t); }; c.appendChild(b); }); }
         function renderFrameList() { const c = document.getElementById('frame-slider'); c.innerHTML = ''; frames.forEach(f => { const b = document.createElement('button'); b.className = `flex-shrink-0 px-3 py-2 text-[8px] font-bold uppercase rounded-lg border border-white/10 ${f.color||'bg-white/10'}`; b.innerText = f.name; b.onclick = () => changeFrame(f.file); c.appendChild(b); }); }
@@ -424,44 +471,113 @@
         function addTextToCanvas() { const v = document.getElementById('custom-text-input').value; if(!v) return; const t = new fabric.IText(v, { left: 100, top: 400, fontSize: 40, fill: selectedColor, fontFamily: selectedFont, fontWeight: 'bold' }); fCanvas.add(t); fCanvas.setActiveObject(t); document.getElementById('custom-text-input').value = ""; }
         function changeFrame(f) { const o = fCanvas.getObjects(); o.forEach(x => { if(x.isFrame) fCanvas.remove(x); }); fabric.Image.fromURL(`assets/frames/${f}`, i => { i.set({ left: 0, top: 0, selectable: false, isFrame: true, evented: false }); i.scaleToWidth(fCanvas.width); fCanvas.add(i); i.bringToFront(); }); }
 
-        function updateSessionUI() { const c = document.getElementById('session-slots-container'); c.innerHTML = ''; let fc = 0; savedSessions.forEach((d, i) => { const e = document.createElement('div'); e.className = `session-slot ${i===currentSlotIndex?'active-slot':''}`; if(d) { fc++; e.innerHTML = `<img src="${d}"><div class="delete-overlay" onclick="deleteSession(${i})"><span class="text-white text-lg">🗑️</span></div>`; } else { e.innerHTML = `<div class="flex items-center justify-center w-full h-full text-white/20 text-[10px] font-bold border-dashed border-2 border-white/10">${i+1}</div>`; } c.appendChild(e); }); document.getElementById('session-count').innerText = `${fc}/4`; document.getElementById('btn-next-session').style.display = fc>=4?'none':'flex'; }
+        function updateSessionUI() { 
+            const c = document.getElementById('session-slots-container'); c.innerHTML = ''; let fc = 0; 
+            savedSessions.forEach((d, i) => { 
+                const e = document.createElement('div'); 
+                e.className = `session-slot group ${i===currentSlotIndex?'active-slot':''}`; 
+                if(d) { 
+                    fc++; 
+                    e.innerHTML = `
+                        <img src="${d}" onclick="switchSession(${i})" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/70 flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="switchSession(${i})" title="Edit Sesi" class="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center text-xs hover:scale-110 active:scale-95 transition-transform">✏️</button>
+                            <button onclick="duplicateSession(${i})" title="Duplikat Sesi" class="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center text-xs hover:scale-110 active:scale-95 transition-transform">📄</button>
+                            <button onclick="deleteSession(${i})" title="Hapus Sesi" class="w-7 h-7 bg-red-500 rounded-full flex items-center justify-center text-xs hover:scale-110 active:scale-95 transition-transform">🗑️</button>
+                        </div>
+                    `; 
+                } else { 
+                    e.innerHTML = `<div class="flex items-center justify-center w-full h-full text-white/20 text-[10px] font-bold border-dashed border-2 border-white/10">${i+1}</div>`; 
+                } 
+                c.appendChild(e); 
+            }); 
+            document.getElementById('session-count').innerText = `${fc}/4`; 
+            document.getElementById('btn-next-session').style.display = fc>=4?'none':'flex'; 
+            
+            // --- UPDATE TOMBOL DOWNLOAD SEMUA ---
+            const btnDownloadAll = document.getElementById('btn-download-all');
+            if (btnDownloadAll) {
+                if (fc >= 2) {
+                    btnDownloadAll.disabled = false;
+                    btnDownloadAll.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    btnDownloadAll.disabled = true;
+                    btnDownloadAll.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            }
+
+            // Sync State ke HP
+            if (conn && conn.open) { conn.send({ type: 'SESSION_COUNT_UPDATE', count: fc }); }
+        }
+        
         function handleNextSession() { const n = savedSessions.findIndex(s => s===null); if(n!==-1) { currentSlotIndex=n; startSequence(); } else alert("Penuh!"); }
         
-        function handlePrintSingleDefault() { fCanvas.discardActiveObject().renderAll(); const d = fCanvas.toDataURL({format:'png', multiplier:3}); const w = window.open('','_blank'); w.document.write(`<html><head><style>@page{size:A4 portrait;margin:0}body{margin:0;display:flex;align-items:center;justify-content:center;height:100vh}img{width:102mm;border:1px dashed #ccc}</style></head><body><img src="${d}" onload="window.print()"></body></html>`); w.document.close(); }
-        function handlePrintComposite() { let h=''; savedSessions.forEach(d => h+=d?`<div class="photo-container"><img src="${d}"></div>`:`<div class="photo-container"></div>`); const w = window.open('','_blank'); w.document.write(`<html><head><style>@page{size:A4 portrait;margin:0}body{margin:0;padding:10mm;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:5mm;height:100vh;box-sizing:border-box}.photo-container{display:flex;align-items:center;justify-content:center;border:1px dashed #eee;overflow:hidden}img{max-width:95%;max-height:95%;object-fit:contain}</style></head><body>${h}</body></html>`); w.document.close(); setTimeout(()=>w.print(),500); }
+        function handlePrintSingleDefault() { 
+            fCanvas.discardActiveObject().renderAll(); 
+            const d = fCanvas.toDataURL({format:'png', multiplier:3}); 
+            let iframe = document.getElementById('printFrame');
+            if (!iframe) { iframe = document.createElement('iframe'); iframe.id = 'printFrame'; iframe.style.position = 'fixed'; iframe.style.top = '-1000px'; document.body.appendChild(iframe); }
+            const doc = iframe.contentWindow.document; doc.open(); 
+            doc.write(`<html><head><style>@page{size:A4 portrait;margin:0}body{margin:0;display:flex;align-items:center;justify-content:center;height:100vh}img{width:102mm;border:1px dashed #ccc}</style></head><body><img src="${d}" onload="window.print()"></body></html>`); 
+            doc.close(); 
+        }
+
+        function handlePrintComposite() { 
+            let h=''; savedSessions.forEach(d => h+=d?`<div class="photo-container"><img src="${d}"></div>`:`<div class="photo-container"></div>`); 
+            let iframe = document.getElementById('printFrame');
+            if (!iframe) { iframe = document.createElement('iframe'); iframe.id = 'printFrame'; iframe.style.position = 'fixed'; iframe.style.top = '-1000px'; document.body.appendChild(iframe); }
+            const doc = iframe.contentWindow.document; doc.open(); 
+            doc.write(`<html><head><style>@page{size:A4 portrait;margin:0}body{margin:0;padding:10mm;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:5mm;height:100vh;box-sizing:border-box}.photo-container{display:flex;align-items:center;justify-content:center;border:1px dashed #eee;overflow:hidden}img{max-width:95%;max-height:95%;object-fit:contain}</style></head><body>${h}</body></html>`); 
+            doc.close(); setTimeout(() => iframe.contentWindow.print(), 1000); 
+        }
 
         function downloadLocal() {
             fCanvas.discardActiveObject().renderAll();
             const dataUrl = fCanvas.toDataURL({format:'png', multiplier:2});
-            const a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = `TKJ_Booth_PC_${Date.now()}.png`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            const a = document.createElement('a'); a.href = dataUrl; a.download = `TKJ_Booth_PC_Sesi_${currentSlotIndex+1}_${Date.now()}.png`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+
+        // --- FUNGSI DOWNLOAD SEMUA ---
+        async function downloadAllLocal() {
+            saveCanvasToSessionVar();
+            let idx = 1;
+            for (let i = 0; i < savedSessions.length; i++) {
+                if (savedSessions[i]) {
+                    const a = document.createElement('a');
+                    a.href = savedSessions[i];
+                    a.download = `TKJ_Booth_PC_Sesi_${i+1}_${Date.now()}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    idx++;
+                    await new Promise(r => setTimeout(r, 600)); // Delay agar browser tidak mendeteksi sebagai spam
+                }
+            }
         }
 
         function adjustLayout() { const c = document.getElementById('canvas-scaler-container'); const s = document.getElementById('canvas-scaler'); if(s&&c) { const sc = Math.min((c.clientWidth-20)/380, (c.clientHeight-20)/820); s.style.transform = `scale(${Math.min(sc,1)})`; } } window.addEventListener('resize', adjustLayout);
         
-        // Modal Remote
         function openRemoteModal() { 
             document.getElementById('remote-modal').classList.remove('hidden'); 
             if (!peer) { 
                 peer = new Peer(); 
                 peer.on('open', id => { 
                     document.getElementById("qrcode").innerHTML=""; 
-                    
                     let currentHref = window.location.href.split('?')[0]; 
                     if (!currentHref.endsWith('/') && !currentHref.endsWith('.html')) { currentHref += '/'; } 
                     else if (currentHref.endsWith('.html')) { currentHref = currentHref.substring(0, currentHref.lastIndexOf('/') + 1); }
                     let remoteUrl = currentHref + "remote.html?remoteId=" + id;
-
                     new QRCode(document.getElementById("qrcode"), { text: remoteUrl, width:130, height:130 }); 
                 }); 
                 peer.on('connection', c => { 
                     conn = c; 
                     document.getElementById('remote-status').innerText = "TERHUBUNG!"; 
                     
+                    // Kirim status awal ke HP saat pertama connect
+                    const fc = savedSessions.filter(s => s !== null).length;
+                    conn.send({ type: 'SESSION_COUNT_UPDATE', count: fc });
+
                     conn.on('data', d => { 
                         if(d==='SHOT') { 
                             const act = document.querySelector('.active-state').id; 
@@ -479,6 +595,12 @@
                             fCanvas.discardActiveObject().renderAll();
                             const imgData = fCanvas.toDataURL({format:'png', multiplier:2});
                             conn.send({ type: 'DOWNLOAD_DATA', image: imgData });
+                        }
+                        // --- TERIMA PERINTAH DOWNLOAD SEMUA DARI HP ---
+                        else if(d==='DOWNLOAD_ALL_TO_PHONE') {
+                            saveCanvasToSessionVar();
+                            const images = savedSessions.filter(s => s !== null);
+                            conn.send({ type: 'DOWNLOAD_ALL_DATA', images: images });
                         }
                     }); 
                 }); 
